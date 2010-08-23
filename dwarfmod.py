@@ -94,20 +94,23 @@ class dfmodule:
                 targetPath = os.path.join(target_release, purgedir)
                 modPath = os.path.join(self.directory, purgedir)
                 print "Deleting " + targetPath
-                shutils.rmtree(targetPath)
+                shutil.rmtree(targetPath)
                 print "Copying " + modPath + " to " + targetPath
-                shutils.copytree(modPath,targetPath)
+                shutil.copytree(modPath,targetPath)
                 
             print "\nThis package copies the following files/directories (overwriting files if they exist):"
             for copyfile in self.copy:
                 targetPath = os.path.join(target_release, copyfile)
                 modPath = os.path.join(self.directory, copyfile)
                 print "Copying " + modPath + " to " + targetPath
-                distutils.dir_util.copy_tree(modPath,targetPath)
+                if os.path.isdir(modPath):
+                    distutils.dir_util.copy_tree(modPath,targetPath)
+                else:
+                    shutil.copy(modPath,targetPath)
             print "\nThis package patches the following files:"
             for patchfile in self.patch:
-                targetPath = os.path.join(target_release, copyfile)
-                modPath = os.path.join(self.directory, copyfile)
+                targetPath = os.path.join(target_release, patchfile)
+                modPath = os.path.join(self.directory, patchfile)
                 print "Applying " + modPath + " to " + targetPath
                 rawPatchMerge(modPath,targetPath)
             # todo: handle existing savegames
@@ -116,8 +119,10 @@ class dfmodule:
                 
             
 
-
+    # todo: rewrite with install() and the dry_run flag of distutils.dir_util.copy_tree
     def dryrun(self,target_release):
+
+
         # todo: version checking. 
         # Grep 'release notes.txt' for version, check against metadata.
 
@@ -141,8 +146,8 @@ class dfmodule:
                 print "Copy " + modPath + " to " + targetPath
             print "\nThis package patches the following files:"
             for patchfile in self.patch:
-                targetPath = os.path.join(target_release, copyfile)
-                modPath = os.path.join(self.directory, copyfile)
+                targetPath = os.path.join(target_release, patchfile)
+                modPath = os.path.join(self.directory, patchfile)
                 print "Apply " + modPath + " to " + targetPath
 
             # todo: handle existing savegames

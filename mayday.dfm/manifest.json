@@ -3,18 +3,19 @@
     "url": "http://mayday.w.staszic.waw.pl/DFGtutorial.php",
     "creator":"Mike Mayday",
     "description":"Mike Mayday's Dwarf Fortress pack.",
-    "targetVersionMin":"0.31.01",
-    "targetVersionMax":"0.31.11",
+    "targetVersionMin":"0.31.12",
+"targetVersionMax":"0.31.12",
     "purge": [
 	"raw"
     ],
     "copy": [
 	"data/art",
 	"data/init/embark_profiles.txt",
-	"data/colors.txt"
+	"data/init/colors.txt",
+	"data/init/d_init.txt"
     ],
     "patch": [
-	"data/init.txt"
+	"data/init/init.txt"
     ]
 
     

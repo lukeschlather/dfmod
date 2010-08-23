@@ -10,7 +10,7 @@ from sys import argv
 import os.path
 import distutils.dir_util
 import shutil
-import dfmod
+from dwarfmod import *
 
 usage = '''
 Usage: dfmod.py install <target-release> <module>
