@@ -41,10 +41,10 @@ To make a dfmodule, you should create a directory with a structure that mirrors 
 Note: The JSON spec does not actually allow comments, see the actual manifest in the example mayday.dfm for what this should look like. (This might merit a switch to yml or xml.)
 
 
-==Bugs
+##Bugs
 Patch will only change existing options. In other words, if you include [FONT:mayday.png] in your init.txt.dfpat file, it will only end up in the init.txt file if you have [FONT:somefile] in your existing init.txt file. This shouldn't be a problem for a clean release, which presumably includes all options. 
 
-==Needs work
+##Needs work
 
 * Currently a .dfm is a directory. It should be zipfile (or at least have support for zipped dfm's. 
 * Patch should be gutted.
