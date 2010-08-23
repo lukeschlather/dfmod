@@ -10,6 +10,8 @@ from sys import argv
 import os.path
 import distutils.dir_util
 import shutil
+import tempfile
+import zipfile
 from dwarfmod import *
 
 usage = '''
@@ -47,9 +49,23 @@ elif argv[1] == 'install':
         print 'Error: wrong number of arguments.'
         print usage
         exit(1)
-        
-    module = dfmodule(mod)
+
+    if not zipfile.is_zipfile(mod):         # Check type of specified module;
+        module = dfmodule(mod)              # if it's a zipfile, extract it to
+    else:                                   # a temporary directory and
+        tmpdir = tempfile.mkdtemp()         # install from there.
+        try:
+            zipmod = zipfile.ZipFile(mod, 'r')
+            zipmod.extractall(tmpdir)       # DANGER WILL ROBINSON - this is
+        except zipfile.BadZipfile:          # very  unsafe! Needs sanitization.
+            print 'Error: incorrect format or corrupted module file.'
+            exit(2)
+        module = dfmodule(tmpdir)
+    # todo: path sanitization while extracting the module
+    # todo: maybe handle this in a less stupid manner (but maybe not, if this works)
+
     module.install(targ)
+
 elif argv[1] == 'dry-run':
     if len(argv) == 3:
         targ = os.path.abspath('') # assume current working directory
