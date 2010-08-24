@@ -50,21 +50,26 @@ elif argv[1] == 'install':
         print usage
         exit(1)
 
-    if not zipfile.is_zipfile(mod):         # Check type of specified module;
-        module = dfmodule(mod)              # if it's a zipfile, extract it to
-    else:                                   # a temporary directory and
-        tmpdir = tempfile.mkdtemp()         # install from there.
-        try:
-            zipmod = zipfile.ZipFile(mod, 'r')
-            zipmod.extractall(tmpdir)       # DANGER WILL ROBINSON - this is
-        except zipfile.BadZipfile:          # very  unsafe! Needs sanitization.
-            print 'Error: incorrect format or corrupted module file.'
-            exit(2)
+    if not zipfile.is_zipfile(mod):
+        module = dfmodule(mod)
+		module.install(targ)
+    else:
+        tmpdir = tempfile.mkdtemp()
+        zipmod = zipfile.ZipFile(mod, 'r')
+        for member in zipmod.infolist():
+            path = os.path.normpath(os.path.join(tmpdir, member.filename))
+            if re.match(tmpdir + ".*", path):
+                zipmod.extract(member, tmpdir)
+            else:
+                print "Warning: skipping out-of-path file " + path + " (possibly malicious module?)"
+				if not promptYesNo("Continue with installation?", 0):
+                    shutil.rmtree(tmpdir)
+                    exit(1)
         module = dfmodule(tmpdir)
-    # todo: path sanitization while extracting the module
+        module.install(targ)
+        shutil.rmtree(tmpdir)
+		
     # todo: maybe handle this in a less stupid manner (but maybe not, if this works)
-
-    module.install(targ)
 
 elif argv[1] == 'dry-run':
     if len(argv) == 3:
