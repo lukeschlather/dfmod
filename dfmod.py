@@ -15,43 +15,44 @@ import zipfile
 from dwarfmod import *
 
 usage = '''
-Usage: dfmod.py install <target-release> <module>
+Usage: dfmod.py install [target-release] <module>
        - Adds the module specified to the target release of Dwarf fortress. i.e.
-       dfmod.py install df_linux maydayDFG[.zip]
-       
-       dfmod.py add <module>
-       Like above, but assumes the current directory is <target-release>
+       dfmod.py install df_linux maydayDFG
+       - If target-release is unspecified, will use the current directory as
+       the target
+
+       dfmod.py dry-run [target-release] <module>
+       - Like install, but doesn't change any files (only shows changes)
 
        dfmod.py show <module>
        - show contents and description of module
 
        wishlist:
        dfmod.py validate <module>
-       -  check validity of module (probably not worth trouble)
-       dfmod.py dry-run <target-release> <module> 
-       - don\'t install, just show what would happen
+       - check validity of module (probably not worth trouble)
        dfmod.py remove <target-release> <module>
-todo: implement zip
 '''
 
 # Determine installation target
-if len(argv) <= 2:
+if len(argv) <= 2 or len(argv) >= 5:
     print usage
     exit(1)
 elif len(argv) == 3:
 	targ = os.path.abspath('')	# assume current working directory
+	mod = os.path.abspath(argv[2])
 elif len(argv) == 4:
 	targ = os.path.abspath(argv[2])
-else
+	mod = os.path.abspath(argv[3])
+else:
 	print usage
 	exit(1)
 
 # Prepare installation source
 if not zipfile.is_zipfile(mod):
-	is_zipmod = false
-    module = dfmodule(mod)
+	is_zipmod = False
+	module = dfmodule(mod)
 else:
-	is_zipmod = true
+    is_zipmod = True
     tmpdir = tempfile.mkdtemp()
     zipmod = zipfile.ZipFile(mod, 'r')
     for member in zipmod.infolist():
@@ -72,7 +73,7 @@ elif argv[1] == 'dry-run':
 	module.dryrun(targ)
 elif argv[1] == 'show':
 	module.pretty_print()
-else
+else:
 	print usage
 	exit(1)
 
